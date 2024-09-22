@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["bun", "run" "start"]
+CMD ["bun", "run" "start:dev"]

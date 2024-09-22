@@ -6,10 +6,7 @@ const mongoDbUrl =
   Bun.env.MONGO_DB_URL || "mongodb://hackathon_db_24:27017/data";
 
 const getShipmentId = (pathname: string) => {
-  const pathRegexForID = /^\/api\/shipment\/(\d+)$/;
-  const match = pathname.match(pathRegexForID);
-  const id = match && match[1];
-  return id;
+  return pathname.split("/")[2];
 };
 
 const launchServer = () => {
@@ -18,21 +15,21 @@ const launchServer = () => {
     async fetch(req) {
       const { pathname, searchParams } = new URL(req.url);
       const method = req.method;
-      console.log(">>>>>>>>>>>>>>>>> ", pathname, searchParams);
-      if ((method === "GET" && pathname === "/shipment") || searchParams) {
+
+      if (method === "GET" && pathname === "/shipment") {
         const urlParams = new URLSearchParams(searchParams);
         const params = Object.fromEntries(urlParams.entries());
         const { shopId, career, zipCode, limit, pageNumber } = params as {
           shopId?: string;
           career?: string;
           zipCode?: string;
-          limit: string;
-          pageNumber: string;
+          limit?: string;
+          pageNumber?: string;
         };
         const payload = {
           filters: { shopId, career, zipCode },
-          limit: +limit,
-          pageNumber: +pageNumber,
+          limit: limit ? +limit : undefined,
+          pageNumber: pageNumber ? +pageNumber : undefined,
         };
         return shipmentService.handleGetAllShipments(payload);
       }
@@ -50,7 +47,10 @@ const launchServer = () => {
 
       if (method === "POST" && pathname === "/shipment") {
         const body = await req.json();
-        return shipmentService.handleCreateShipment(body);
+        console.log(">>>>>>>>>> ", body);
+        if (body) {
+          return shipmentService.handleCreateShipment(body);
+        }
       }
 
       if (method === "PATCH") {

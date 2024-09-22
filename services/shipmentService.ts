@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import ShipmentController, {
   GetShipmentsParams,
 } from "../controllers/shipmeptController";
@@ -5,6 +6,9 @@ import { Shipment } from "../models/shipmentSchema";
 
 const shipmentService = {
   async handelGetShipmentById(id: string) {
+    if (!ObjectId.isValid(id))
+      return new Response("Shipment id not valid", { status: 400 });
+
     const shipment = await ShipmentController.getShipmentById(id);
 
     if (!shipment) {
@@ -38,6 +42,9 @@ const shipmentService = {
     });
   },
   async handleUpdateShipment(id: string, shipmentPayload: Shipment) {
+    if (!ObjectId.isValid(id))
+      return new Response("Shipment id not valid", { status: 400 });
+
     const updatedShipment = await ShipmentController.updateShipment(
       id,
       shipmentPayload
@@ -53,6 +60,9 @@ const shipmentService = {
     });
   },
   async handleDeletePost(id: string) {
+    if (!ObjectId.isValid(id))
+      return new Response("Shipment id not valid", { status: 400 });
+
     const deletedShipment = await ShipmentController.deleteShipment(id);
 
     if (!deletedShipment) {

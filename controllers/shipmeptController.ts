@@ -16,10 +16,16 @@ const ShipmentController = {
     } = params;
     const offset = (pageNumber - 1) * limit;
 
-    return await ShipmentSchema.find({ shopId, career, zipCode })
+    const query: { shopId?: string; career?: string; zipCode?: string } = {};
+    if (shopId) query.shopId = shopId;
+    if (career) query.career = career;
+    if (zipCode) query.zipCode = zipCode;
+
+    const result = await ShipmentSchema.find(query)
       .sort({ _id: -1 })
       .skip(offset)
       .limit(limit);
+    return result;
   },
   async getShipmentById(id: string) {
     const objectId = new ObjectId(id);

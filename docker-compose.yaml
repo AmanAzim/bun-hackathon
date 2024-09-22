@@ -1,19 +1,61 @@
 version: "3"
 services:
-  bun-hackathon:
-    image: oven/bun:latest #bun-hackathon
+  bun-hackathon_1:
+    image: bun-hackathon
     command: "bun run start:dev"
+    hostname: api1
     ports:
-      - "3000:3000"
+      - "3002:3002"
     volumes:
       - .:/usr/src/app # has to be same as Dockerfile workdir. It is mapping the current path of the local mechine to /usr/src/app that enables nodemon to pickup any local changes
     depends_on:
       - "hackathon_db_24"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "0.5GB"
     environment:
       LISTEN_HOST: 0.0.0.0
-      PORT: 3000
+      PORT: 3002
       MONGO_DB_NAME: "hackathon_db_24"
       MONGO_DB_URL: "mongodb://hackathon_db_24:27017/data"
+
+  bun-hackathon_2:
+    image: bun-hackathon
+    command: "bun run start:dev"
+    hostname: api2
+    ports:
+      - "3003:3003"
+    volumes:
+      - .:/usr/src/app # has to be same as Dockerfile workdir. It is mapping the current path of the local mechine to /usr/src/app that enables nodemon to pickup any local changes
+    depends_on:
+      - "hackathon_db_24"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "0.5GB"
+    environment:
+      LISTEN_HOST: 0.0.0.0
+      PORT: 3003
+      MONGO_DB_NAME: "hackathon_db_24"
+      MONGO_DB_URL: "mongodb://hackathon_db_24:27017/data"
+
+  nginx: # Load Balancer
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api1
+      - api2
+    ports:
+      - "9999:9999"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "0.5GB"
 
   hackathon_db_24:
     image: "mongo"
@@ -22,5 +64,11 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db # name of the volume can be anything but /data/db has to be the same because by default inside docker mongo container mongo db always saves everyting there
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: "1.5GB"
+
 volumes:
   mongo-data:
