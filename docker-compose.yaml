@@ -1,0 +1,26 @@
+version: "3"
+services:
+  bun-hackathon:
+    image: oven/bun:latest #bun-hackathon
+    command: "bun run start:dev"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app # has to be same as Dockerfile workdir. It is mapping the current path of the local mechine to /usr/src/app that enables nodemon to pickup any local changes
+    depends_on:
+      - "hackathon_db_24"
+    environment:
+      LISTEN_HOST: 0.0.0.0
+      PORT: 3000
+      MONGO_DB_NAME: "hackathon_db_24"
+      MONGO_DB_URL: "mongodb://hackathon_db_24:27017/data"
+
+  hackathon_db_24:
+    image: "mongo"
+    restart: always
+    ports: # without this the db will run but we cannot connect to it locally using compas
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db # name of the volume can be anything but /data/db has to be the same because by default inside docker mongo container mongo db always saves everyting there
+volumes:
+  mongo-data:

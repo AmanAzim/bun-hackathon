@@ -18,4 +18,8 @@ To run in watch mode:
 bun run start:dev
 ```
 
+```Build docker image
+docker build -t bun-hackathon .
+```
+
 This project was created using `bun init` in bun v1.1.29. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
