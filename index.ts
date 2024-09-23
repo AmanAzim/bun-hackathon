@@ -1,14 +1,9 @@
 import mongoose from "mongoose";
 
-import shipmentService from "./services/shipmentService";
-import shipentRoutesHandler from "./routes/shipmentRoutes";
+import shipmentRoutesHandler from "./routes/shipmentRoutes";
 
 const mongoDbUrl =
   Bun.env.MONGO_DB_URL || "mongodb://hackathon_db_24:27017/data";
-
-const getShipmentId = (pathname: string) => {
-  return pathname.split("/")[2];
-};
 
 const launchServer = () => {
   const server = Bun.serve({
@@ -17,63 +12,17 @@ const launchServer = () => {
       const { pathname, searchParams } = new URL(req.url);
       const method = req.method;
 
-      if (method === "GET" && pathname === "/shipment") {
-        const urlParams = new URLSearchParams(searchParams);
-        const params = Object.fromEntries(urlParams.entries());
-        const { shopId, career, zipCode, limit, pageNumber } = params as {
-          shopId?: string;
-          career?: string;
-          zipCode?: string;
-          limit?: string;
-          pageNumber?: string;
-        };
-        const payload = {
-          filters: { shopId, career, zipCode },
-          limit: limit ? +limit : undefined,
-          pageNumber: pageNumber ? +pageNumber : undefined,
-        };
-        return shipmentService.handleGetAllShipments(payload);
-      }
-
-      if (method === "GET" && pathname === "/shipment/count") {
-        return shipmentService.handleGetShipmentsCount();
-      }
-
-      if (method === "GET") {
-        const id = getShipmentId(pathname);
-        if (id) {
-          return shipmentService.handelGetShipmentById(id);
+      if (pathname.includes("shipment")) {
+        const response = await shipmentRoutesHandler({
+          req,
+          method,
+          pathname,
+          searchParams,
+        });
+        if (response) {
+          return response;
         }
       }
-
-      if (method === "POST" && pathname === "/shipment") {
-        const body = await req.json();
-
-        if (body) {
-          return shipmentService.handleCreateShipment(body);
-        }
-      }
-
-      if (method === "PATCH") {
-        const body = await req.json();
-        const id = getShipmentId(pathname);
-
-        if (id) {
-          return shipmentService.handleUpdateShipment(id, body);
-        }
-      }
-
-      if (method === "DELETE" && pathname === "/shipment") {
-        const id = getShipmentId(pathname);
-        if (id) {
-          return shipmentService.handleDeletePost(id);
-        }
-      }
-
-      // const response = await shipentRoutesHandler({ req, method, pathname, searchParams });
-      // if (response) {
-      //   return response;
-      // }
 
       return new Response("Not Found", { status: 404 });
     },

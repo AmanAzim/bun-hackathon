@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import ShipmentController, {
   GetShipmentsParams,
 } from "../controllers/shipmeptController";
@@ -6,70 +5,22 @@ import { Shipment } from "../models/shipmentSchema";
 
 const shipmentService = {
   async handelGetShipmentById(id: string) {
-    if (!ObjectId.isValid(id))
-      return new Response("Shipment id not valid", { status: 400 });
-
-    const shipment = await ShipmentController.getShipmentById(id);
-
-    if (!shipment) {
-      return new Response("Shipment Not Found", { status: 404 });
-    }
-
-    return new Response(JSON.stringify(shipment), {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await ShipmentController.getShipmentById(id);
   },
   async handleGetAllShipments(params: GetShipmentsParams) {
-    const shipments = await ShipmentController.getShipments(params);
-
-    return new Response(JSON.stringify(shipments), {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await ShipmentController.getShipments(params);
   },
   async handleGetShipmentsCount() {
-    const shipmentsCount = await ShipmentController.getShipmentsCount();
-
-    return new Response(JSON.stringify(shipmentsCount), {
-      headers: { "Content-Type": "application/json" },
-    });
+    return await ShipmentController.getShipmentsCount();
   },
   async handleCreateShipment(shipmentPayload: Shipment) {
-    const newShipment = await ShipmentController.addShipment(shipmentPayload);
-
-    return new Response(JSON.stringify(newShipment), {
-      headers: { "Content-Type": "application/json" },
-      status: 201,
-    });
+    return await ShipmentController.addShipment(shipmentPayload);
   },
   async handleUpdateShipment(id: string, shipmentPayload: Shipment) {
-    if (!ObjectId.isValid(id))
-      return new Response("Shipment id not valid", { status: 400 });
-
-    const updatedShipment = await ShipmentController.updateShipment(
-      id,
-      shipmentPayload
-    );
-
-    if (!updatedShipment) {
-      return new Response("Shipment Not Found", { status: 404 });
-    }
-
-    return new Response(JSON.stringify(updatedShipment), {
-      headers: { "Content-Type": "application/json" },
-      status: 201,
-    });
+    return await ShipmentController.updateShipment(id, shipmentPayload);
   },
-  async handleDeletePost(id: string) {
-    if (!ObjectId.isValid(id))
-      return new Response("Shipment id not valid", { status: 400 });
-
-    const deletedShipment = await ShipmentController.deleteShipment(id);
-
-    if (!deletedShipment) {
-      return new Response("Shipment Not Found", { status: 404 });
-    }
-
-    return new Response("Shipment Deleted", { status: 200 });
+  async handleDeleteShipment(id: string) {
+    return await ShipmentController.deleteShipment(id);
   },
 };
 
