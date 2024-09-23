@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import shipmentService from "./services/shipmentService";
+import shipentRoutesHandler from "./routes/shipmentRoutes";
 
 const mongoDbUrl =
   Bun.env.MONGO_DB_URL || "mongodb://hackathon_db_24:27017/data";
@@ -68,6 +69,11 @@ const launchServer = () => {
           return shipmentService.handleDeletePost(id);
         }
       }
+
+      // const response = await shipentRoutesHandler({ req, method, pathname, searchParams });
+      // if (response) {
+      //   return response;
+      // }
 
       return new Response("Not Found", { status: 404 });
     },

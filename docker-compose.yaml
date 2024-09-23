@@ -8,6 +8,8 @@ services:
       - .:/usr/src/app
     depends_on:
       - "hackathon_db_24"
+    ports:
+      - "5001:5001"
     expose:
       - "3002"
     networks:
