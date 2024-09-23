@@ -47,7 +47,7 @@ const launchServer = () => {
 
       if (method === "POST" && pathname === "/shipment") {
         const body = await req.json();
-        console.log(">>>>>>>>>> ", body);
+
         if (body) {
           return shipmentService.handleCreateShipment(body);
         }
