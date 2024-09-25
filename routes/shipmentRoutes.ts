@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
-import shipmentService from "../services/shipmentService";
+
+import ShipmentController from "../controllers/shipmeptController";
 
 const getShipmentId = (pathname: string) => {
   return pathname.split("/")[2];
@@ -9,7 +10,7 @@ const getValidShipmentById = async (id: string) => {
   if (!ObjectId.isValid(id)) {
     return new Response("Shipment id not valid", { status: 400 });
   }
-  const shipment = await shipmentService.handelGetShipmentById(id);
+  const shipment = await ShipmentController.getShipmentById(id);
   if (!shipment) {
     return new Response("Shipment Not Found", { status: 404 });
   }
@@ -42,7 +43,7 @@ const shipmentRoutesHandler = async ({
       limit: limit ? +limit : undefined,
       pageNumber: pageNumber ? +pageNumber : undefined,
     };
-    const shipments = await shipmentService.handleGetAllShipments(payload);
+    const shipments = await ShipmentController.getShipments(payload);
 
     return new Response(JSON.stringify(shipments), {
       headers: { "Content-Type": "application/json" },
@@ -50,7 +51,7 @@ const shipmentRoutesHandler = async ({
   }
 
   if (method === "GET" && pathname === "/shipment/count") {
-    const shipmentsCount = await shipmentService.handleGetShipmentsCount();
+    const shipmentsCount = await ShipmentController.getShipmentsCount();
     return new Response(JSON.stringify(shipmentsCount), {
       headers: { "Content-Type": "application/json" },
     });
@@ -60,7 +61,7 @@ const shipmentRoutesHandler = async ({
     const body = await req.json();
 
     if (body) {
-      const newShipment = await shipmentService.handleCreateShipment(body);
+      const newShipment = await ShipmentController.addShipment(body);
 
       return new Response(JSON.stringify(newShipment), {
         headers: { "Content-Type": "application/json" },
@@ -81,10 +82,7 @@ const shipmentRoutesHandler = async ({
   if (method === "PATCH") {
     const body = await req.json();
 
-    const updatedShipment = await shipmentService.handleUpdateShipment(
-      id,
-      body
-    );
+    const updatedShipment = await ShipmentController.updateShipment(id, body);
 
     if (!updatedShipment) {
       return new Response("Failed to update shipment", { status: 404 });
@@ -97,7 +95,7 @@ const shipmentRoutesHandler = async ({
   }
 
   if (method === "DELETE") {
-    const deletedShipment = await shipmentService.handleDeleteShipment(id);
+    const deletedShipment = await ShipmentController.deleteShipment(id);
 
     if (!deletedShipment) {
       return new Response("Failed to delete shipment", { status: 404 });
